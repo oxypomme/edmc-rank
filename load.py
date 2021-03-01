@@ -1,3 +1,5 @@
+# edmc-ranks v1
+
 # import sys
 from typing import Optional, Tuple, Dict, Any, List
 import tkinter as tk
@@ -45,7 +47,6 @@ def plugin_app(parent: tk.Frame) -> Tuple[tk.Label, tk.Label]:
     """
     Create a pair of TK widgets for the EDMC main window
     """
-    #TODO: UX
     frame = tk.Frame(parent)
     frame.columnconfigure(1, weight=1)
 
@@ -107,7 +108,7 @@ def journal_entry(
     cmdr: str, is_beta: bool, system: str, station: str, entry: Dict[str, Any], state: Dict[str, Any]
 ) -> None:
     logger.info(entry['event'])
-    if entry['event'] == 'StartUp' or entry['event'] == 'ReceiveText':
+    if entry['event'] == 'StartUp' or entry["event"] == "FSDJump" or entry["event"] == "Location":
         need = calcNeed(state, "Explore", explorerRanks)
         global lblExplorer
         lblExplorer["text"] = "Explorer: " + explorerRanks[state["Rank"]["Explore"][0]][0] + " - " + str(state["Rank"]["Explore"][1]) + "%"
