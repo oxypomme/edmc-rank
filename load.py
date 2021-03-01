@@ -1,5 +1,3 @@
-# edmc-ranks v1
-
 # import sys
 from typing import Optional, Tuple, Dict, Any, List
 import tkinter as tk
@@ -9,6 +7,8 @@ import os
 
 from config import appname
 from theme import theme
+
+from ranks import explorerRanks, merchantRanks, combatRanks
 
 # This could also be returned from plugin_start3()
 plugin_name = os.path.basename(os.path.dirname(__file__))
@@ -72,46 +72,13 @@ def plugin_app(parent: tk.Frame) -> Tuple[tk.Label, tk.Label]:
 
     return frame
 
-merchantRanks = [
-    ("Penniless", 0),
-    ("M. Pennilesss", 5000),
-    ("Peddler", 100000),
-    ("Dealer", 800000),
-    ("Merchant", 3700000),
-    ("Broker", 30000000),
-    ("Entrepreneur", 140000000),
-    ("Tycoon", 390000000),
-    ("Elite", 1050000000)
-]
-explorerRanks = [
-    ("Aimless", 0),
-    ("M. Aimless", 40000),
-    ("Scout", 270000),
-    ("Surveyor", 1140000),
-    ("Trailblazer", 4200000),
-    ("Pathfinder", 10000000),
-    ("Ranger", 35000000),
-    ("Pioneer", 116000000),
-    ("Elite", 320000000)
-]
-combatRanks = [
-    "Harmless",
-    "M. Harmless",
-    "Novice",
-    "Competent",
-    "Expert",
-    "Master",
-    "Dangerous",
-    "Deadly",
-    "Elite"
-]
-
-def calcNeed(state: Dict[str, Any], categ: str, ranks: List[Tuple[str, int]]) -> Tuple[int, str]:
-    if state["Rank"][categ][0] != 8:
-        maxTodo = ranks[state["Rank"][categ][0] + 1][1] - ranks[state["Rank"][categ][0]][1]
-        crTodo = maxTodo - (maxTodo * (state["Rank"][categ][1]/100))
+def calcNeed(pRank: Tuple[int, int], ranks: List[Tuple[int,str]]) -> Tuple[int, str]:
+    if pRank[0] != 8:
+        maxTodo = ranks[pRank[0] + 1][1] - ranks[pRank[0]][1]
+        crTodo = maxTodo - (maxTodo * (pRank[1]/100))
     else:
         crTodo = 0
+
     if crTodo >= 1000000000:
         return (crTodo/1000000000, "BCr")
     elif crTodo >= 1000000:
@@ -121,28 +88,30 @@ def calcNeed(state: Dict[str, Any], categ: str, ranks: List[Tuple[str, int]]) ->
     else:
         return (crTodo, "Cr")
 
+def drawRank(pRank: Tuple[int, int], ranks: List[Tuple[int,str]], labels: Tuple[tk.Label, tk.Label], name: str) -> None:
+    need = calcNeed(pRank, ranks)
+    # Show rank with percentage
+    labels[0]["text"] = f"{name}: {ranks[pRank[0]][0]} ({pRank[0]}) - {str(pRank[1])} %"
+    # If not elite
+    if pRank[0] != 8:
+        # Show credits to farm
+        labels[1]["text"] = "   {:.2f}".format(need[0]) + f" {need[1]} to {ranks[pRank[0] + 1][0]} ({pRank[0] + 1})"
+    else:
+        # Remove label
+        labels[1].grid_remove()
+
 def journal_entry(
     cmdr: str, is_beta: bool, system: str, station: str, entry: Dict[str, Any], state: Dict[str, Any]
 ) -> None:
-    logger.info(entry['event'])
+    #logger.info(entry['event'])
     if entry['event'] == 'StartUp' or entry["event"] == "FSDJump" or entry["event"] == "Location":
-        need = calcNeed(state, "Explore", explorerRanks)
         global lblExplorer
-        lblExplorer["text"] = "Explorer: " + explorerRanks[state["Rank"]["Explore"][0]][0] + " - " + str(state["Rank"]["Explore"][1]) + "%"
         global statusExplorer
-        if state["Rank"]["Explore"][0] != 8:
-            statusExplorer["text"] = ("   {:.2f}".format(need[0]) + " " + need[1] + " to " + explorerRanks[state["Rank"]["Explore"][0] + 1][0])
-        else:
-            statusExplorer.grid_remove()
+        drawRank(state["Rank"]["Explore"], explorerRanks, (lblExplorer, statusExplorer), "Explorer")
 
-        need = calcNeed(state, "Trade", merchantRanks)
         global lblMerchant
-        lblMerchant["text"] = "Trader: " + merchantRanks[state["Rank"]["Trade"][0]][0] + " - " + str(state["Rank"]["Trade"][1]) + "%"
         global statusMerchant
-        if state["Rank"]["Trade"][0] != 8:
-            statusMerchant["text"] = ("   {:.2f}".format(need[0]) + " " + need[1] + " to " + merchantRanks[state["Rank"]["Trade"][0] + 1][0])
-        else:
-            statusMerchant.grid_remove()
+        drawRank(state["Rank"]["Trade"], merchantRanks, (lblMerchant, statusMerchant), "Trader")
 
         global lblCombat
-        lblCombat["text"] = "Combat: " + combatRanks[state["Rank"]["Combat"][0]] + " - " + str(state["Rank"]["Combat"][1]) + "%"
+        lblCombat["text"] = "Combat: " + combatRanks[state["Rank"]["Combat"][0]] + " (" + str(state["Rank"]["Combat"][0]) + ") - " + str(state["Rank"]["Combat"][1]) + "%"
