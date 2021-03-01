@@ -17,6 +17,9 @@ Follow <https://github.com/EDCD/EDMarketConnector/wiki/Plugins#installing-a-plug
 
 ## Changelog
 
+- v1.1.0
+  - ID for ranks
+  - Support for combat ranks (without the remaining enemies to progress)
 - v1.0.0
   - See progression of the following ranks :
     - Trader
@@ -25,6 +28,4 @@ Follow <https://github.com/EDCD/EDMarketConnector/wiki/Plugins#installing-a-plug
 
 ## TODO
 
-- ID for ranks
-- Support for combat ranks (maybe not the remaining enemies to progress)
 - Maybe less hardcode ?
