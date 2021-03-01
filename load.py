@@ -8,6 +8,7 @@ import logging
 import os
 
 from config import appname
+from theme import theme
 
 # This could also be returned from plugin_start3()
 plugin_name = os.path.basename(os.path.dirname(__file__))
@@ -31,10 +32,11 @@ if not logger.hasHandlers():
     logger_channel.setFormatter(logger_formatter)
     logger.addHandler(logger_channel)
 
-statusExplorer: Optional[tk.Label]
 lblExplorer: Optional[tk.Label]
-statusMerchant: Optional[tk.Label]
+statusExplorer: Optional[tk.Label]
 lblMerchant: Optional[tk.Label]
+statusMerchant: Optional[tk.Label]
+lblCombat: Optional[tk.Label]
 
 def plugin_start3(plugin_dir: str) -> str:
     """
@@ -64,6 +66,10 @@ def plugin_app(parent: tk.Frame) -> Tuple[tk.Label, tk.Label]:
     statusMerchant = tk.Label(frame, text="   ? Cr")
     statusMerchant.grid(row=3, column=1, sticky=tk.W)
 
+    global lblCombat
+    lblCombat = tk.Label(frame, text="Combat:")
+    lblCombat.grid(row=4, column=1, sticky=tk.W)
+
     return frame
 
 merchantRanks = [
@@ -87,6 +93,17 @@ explorerRanks = [
     ("Ranger", 35000000),
     ("Pioneer", 116000000),
     ("Elite", 320000000)
+]
+combatRanks = [
+    "Harmless",
+    "M. Harmless",
+    "Novice",
+    "Competent",
+    "Expert",
+    "Master",
+    "Dangerous",
+    "Deadly",
+    "Elite"
 ]
 
 def calcNeed(state: Dict[str, Any], categ: str, ranks: List[Tuple[str, int]]) -> Tuple[int, str]:
@@ -126,3 +143,6 @@ def journal_entry(
             statusMerchant["text"] = ("   {:.2f}".format(need[0]) + " " + need[1] + " to " + merchantRanks[state["Rank"]["Trade"][0] + 1][0])
         else:
             statusMerchant.grid_remove()
+
+        global lblCombat
+        lblCombat["text"] = "Combat: " + combatRanks[state["Rank"]["Combat"][0]] + " - " + str(state["Rank"]["Combat"][1]) + "%"
