@@ -85,16 +85,16 @@ def calcNeed(pRank: Tuple[int, int], ranks: List[Tuple[int,str]]) -> Tuple[int, 
         return (crTodo/1000000, "MCr")
     elif crTodo >= 1000:
         return (crTodo/1000, "kCr")
-    else:
-        return (crTodo, "Cr")
+    return (crTodo, "Cr")
 
 def drawRank(pRank: Tuple[int, int], ranks: List[Tuple[int,str]], labels: Tuple[tk.Label, tk.Label], name: str) -> None:
-    need = calcNeed(pRank, ranks)
     # Show rank with percentage
     labels[0]["text"] = f"{name}: {ranks[pRank[0]][0]} ({pRank[0]}) - {str(pRank[1])} %"
     # If not elite
     if pRank[0] != 8:
+        need = calcNeed(pRank, ranks)
         # Show credits to farm
+        # ? Maybe {:.3f}
         labels[1]["text"] = "   {:.2f}".format(need[0]) + f" {need[1]} to {ranks[pRank[0] + 1][0]} ({pRank[0] + 1})"
     else:
         # Remove label
