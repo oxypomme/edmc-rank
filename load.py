@@ -73,7 +73,7 @@ def plugin_app(parent: tk.Frame) -> Tuple[tk.Label, tk.Label]:
     return frame
 
 def calcNeed(pRank: Tuple[int, int], ranks: List[Tuple[int,str]]) -> Tuple[int, str]:
-    if pRank[0] != 8:
+    if pRank[0] != len(ranks) - 1:
         maxTodo = ranks[pRank[0] + 1][1] - ranks[pRank[0]][1]
         crTodo = maxTodo - (maxTodo * (pRank[1]/100))
     else:
@@ -91,7 +91,7 @@ def drawRank(pRank: Tuple[int, int], ranks: List[Tuple[int,str]], labels: Tuple[
     # Show rank with percentage
     labels[0]["text"] = f"{name}: {ranks[pRank[0]][0]} ({pRank[0] + 1}) - {str(pRank[1])} %"
     # If not elite
-    if pRank[0] != 8:
+    if pRank[0] != len(ranks) - 1:
         need = calcNeed(pRank, ranks)
         # Show credits to farm
         # ? Maybe {:.3f}
