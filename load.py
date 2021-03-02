@@ -100,24 +100,24 @@ def drawRank(pRank: Tuple[int, int], ranks: List[Tuple[int,str]], labels: Tuple[
         # Remove label
         labels[1].grid_remove()
 
-explorerEvents = ["FSDJump", "Location"]
-merchantEvents = ["FSDJump", "Location"]
-combatEvents = ["FSDJump", "Location"]
+explorerEvents = ["StartUp", "Undocked", "SellExplorationData", "MissionCompleted"]
+merchantEvents = ["StartUp", "Undocked", "MarketSell", "MissionCompleted"]
+combatEvents = ["StartUp", "Undocked", "Location", "MissionCompleted"]
 
 def journal_entry(
     cmdr: str, is_beta: bool, system: str, station: str, entry: Dict[str, Any], state: Dict[str, Any]
 ) -> None:
     #logger.info(entry['event'])
-    if entry['event'] == 'StartUp' or entry["event"] in explorerEvents:
+    if entry["event"] in explorerEvents:
         global lblExplorer
         global statusExplorer
         drawRank(state["Rank"]["Explore"], explorerRanks, (lblExplorer, statusExplorer), "Explorer")
 
-    if entry['event'] == 'StartUp' or entry["event"] in merchantEvents:
+    if entry["event"] in merchantEvents:
         global lblMerchant
         global statusMerchant
         drawRank(state["Rank"]["Trade"], merchantRanks, (lblMerchant, statusMerchant), "Trader")
 
-    if entry['event'] == 'StartUp' or entry["event"] in combatEvents:
+    if entry["event"] in combatEvents:
         global lblCombat
         lblCombat["text"] = "Combat: " + combatRanks[state["Rank"]["Combat"][0]] + " (" + str(state["Rank"]["Combat"][0]) + ") - " + str(state["Rank"]["Combat"][1]) + "%"
