@@ -17,6 +17,8 @@ Follow <https://github.com/EDCD/EDMarketConnector/wiki/Plugins#installing-a-plug
 
 ## Changelog
 
+- v1.2.0
+  - Updates are triggered with corrects events
 - v1.1.0
   - ID for ranks
   - Support for combat ranks (without the remaining enemies to progress)

@@ -102,7 +102,7 @@ def drawRank(pRank: Tuple[int, int], ranks: List[Tuple[int,str]], labels: Tuple[
 
 explorerEvents = ["StartUp", "Undocked", "SellExplorationData", "MissionCompleted"]
 merchantEvents = ["StartUp", "Undocked", "MarketSell", "MissionCompleted"]
-combatEvents = ["StartUp", "Undocked", "Location", "MissionCompleted"]
+combatEvents = ["StartUp", "Undocked", "Docked", "Bounty", "MissionCompleted", "StartJump"]
 
 def journal_entry(
     cmdr: str, is_beta: bool, system: str, station: str, entry: Dict[str, Any], state: Dict[str, Any]
