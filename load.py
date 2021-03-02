@@ -89,13 +89,13 @@ def calcNeed(pRank: Tuple[int, int], ranks: List[Tuple[int,str]]) -> Tuple[int, 
 
 def drawRank(pRank: Tuple[int, int], ranks: List[Tuple[int,str]], labels: Tuple[tk.Label, tk.Label], name: str) -> None:
     # Show rank with percentage
-    labels[0]["text"] = f"{name}: {ranks[pRank[0]][0]} ({pRank[0]}) - {str(pRank[1])} %"
+    labels[0]["text"] = f"{name}: {ranks[pRank[0]][0]} ({pRank[0] + 1}) - {str(pRank[1])} %"
     # If not elite
     if pRank[0] != 8:
         need = calcNeed(pRank, ranks)
         # Show credits to farm
         # ? Maybe {:.3f}
-        labels[1]["text"] = "   {:.2f}".format(need[0]) + f" {need[1]} to {ranks[pRank[0] + 1][0]} ({pRank[0] + 1})"
+        labels[1]["text"] = "   {:.2f}".format(need[0]) + f" {need[1]} to {ranks[pRank[0] + 1][0]} ({pRank[0] + 2})"
     else:
         # Remove label
         labels[1].grid_remove()
@@ -120,4 +120,4 @@ def journal_entry(
 
     if entry["event"] in combatEvents:
         global lblCombat
-        lblCombat["text"] = "Combat: " + combatRanks[state["Rank"]["Combat"][0]] + " (" + str(state["Rank"]["Combat"][0]) + ") - " + str(state["Rank"]["Combat"][1]) + "%"
+        lblCombat["text"] = "Combat: " + combatRanks[state["Rank"]["Combat"][0]] + " (" + str(state["Rank"]["Combat"][0] + 1) + ") - " + str(state["Rank"]["Combat"][1]) + "%"
