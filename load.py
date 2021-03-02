@@ -107,17 +107,20 @@ combatEvents = ["StartUp", "Undocked", "Docked", "Bounty", "MissionCompleted", "
 def journal_entry(
     cmdr: str, is_beta: bool, system: str, station: str, entry: Dict[str, Any], state: Dict[str, Any]
 ) -> None:
-    #logger.info(entry['event'])
+    #logger.debug(entry['event'])
     if entry["event"] in explorerEvents:
         global lblExplorer
         global statusExplorer
         drawRank(state["Rank"]["Explore"], explorerRanks, (lblExplorer, statusExplorer), "Explorer")
+        logger.info("Explorer rank updated !")
 
     if entry["event"] in merchantEvents:
         global lblMerchant
         global statusMerchant
         drawRank(state["Rank"]["Trade"], merchantRanks, (lblMerchant, statusMerchant), "Trader")
+        logger.info("Trader rank updated !")
 
     if entry["event"] in combatEvents:
         global lblCombat
         lblCombat["text"] = "Combat: " + combatRanks[state["Rank"]["Combat"][0]] + " (" + str(state["Rank"]["Combat"][0] + 1) + ") - " + str(state["Rank"]["Combat"][1]) + "%"
+        logger.info("Combat rank updated !")
