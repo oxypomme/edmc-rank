@@ -8,7 +8,7 @@ import os
 from config import appname
 from theme import theme
 
-from ranks import explorerRanks, merchantRanks, combatRanks
+from ranks import explorerRanks, merchantRanks, combatRanks, empireRanks, fedRanks
 
 # This could also be returned from plugin_start3()
 plugin_name = os.path.basename(os.path.dirname(__file__))
@@ -37,6 +37,8 @@ statusExplorer: Optional[tk.Label]
 lblMerchant: Optional[tk.Label]
 statusMerchant: Optional[tk.Label]
 lblCombat: Optional[tk.Label]
+lblEmpire: Optional[tk.Label]
+lblFederation: Optional[tk.Label]
 
 def plugin_start3(plugin_dir: str) -> str:
     """
@@ -70,6 +72,14 @@ def plugin_app(parent: tk.Frame) -> Tuple[tk.Label, tk.Label]:
     lblCombat = tk.Label(frame, text="Combat:")
     lblCombat.grid(row=4, column=1, sticky=tk.W)
 
+    global lblEmpire
+    lblEmpire = tk.Label(frame, text="Empire:")
+    lblEmpire.grid(row=5, column=1, sticky=tk.W)
+
+    global lblFederation
+    lblFederation = tk.Label(frame, text="Federation:")
+    lblFederation.grid(row=6, column=1, sticky=tk.W)
+
     return frame
 
 def calcNeed(pRank: Tuple[int, int], ranks: List[Tuple[int,str]]) -> Tuple[int, str]:
@@ -87,7 +97,7 @@ def calcNeed(pRank: Tuple[int, int], ranks: List[Tuple[int,str]]) -> Tuple[int, 
         return (crTodo/1000, "kCr")
     return (crTodo, "Cr")
 
-def drawRank(pRank: Tuple[int, int], ranks: List[Tuple[int,str]], labels: Tuple[tk.Label, tk.Label], name: str) -> None:
+def drawRankTodo(pRank: Tuple[int, int], ranks: List[Tuple[int,str]], labels: Tuple[tk.Label, tk.Label], name: str) -> None:
     # Show rank with percentage
     labels[0]["text"] = f"{name}: {ranks[pRank[0]][0]} ({pRank[0] + 1}) - {str(pRank[1])} %"
     # If not elite
@@ -100,27 +110,40 @@ def drawRank(pRank: Tuple[int, int], ranks: List[Tuple[int,str]], labels: Tuple[
         # Remove label
         labels[1].grid_remove()
 
+def drawRank(pRank: Tuple[int, int], ranks: List[str], label: tk.Label, name: str, offset = 0) -> None:
+    # Show rank with percentage
+    label["text"] = f"{name}: {ranks[pRank[0]]} ({pRank[0] + offset}) - {str(pRank[1])} %"
+
 explorerEvents = ["StartUp", "Undocked", "SellExplorationData", "MissionCompleted"]
 merchantEvents = ["StartUp", "Undocked", "MarketSell", "MissionCompleted"]
 combatEvents = ["StartUp", "Undocked", "Docked", "Bounty", "MissionCompleted", "StartJump"]
+factionEvents = ["StartUp", "Undocked", "Docked", "MissionCompleted"]
 
 def journal_entry(
     cmdr: str, is_beta: bool, system: str, station: str, entry: Dict[str, Any], state: Dict[str, Any]
 ) -> None:
-    #logger.debug(entry['event'])
+    # logger.debug(state["Rank"])
     if entry["event"] in explorerEvents:
         global lblExplorer
         global statusExplorer
-        drawRank(state["Rank"]["Explore"], explorerRanks, (lblExplorer, statusExplorer), "Explorer")
-        logger.info("Explorer rank updated !")
+        drawRankTodo(state["Rank"]["Explore"], explorerRanks, (lblExplorer, statusExplorer), "Explorer")
+        logger.info("Explorer rank updated ! From " + entry["event"])
 
     if entry["event"] in merchantEvents:
         global lblMerchant
         global statusMerchant
-        drawRank(state["Rank"]["Trade"], merchantRanks, (lblMerchant, statusMerchant), "Trader")
-        logger.info("Trader rank updated !")
+        drawRankTodo(state["Rank"]["Trade"], merchantRanks, (lblMerchant, statusMerchant), "Trader")
+        logger.info("Trader rank updated ! From " + entry["event"])
 
     if entry["event"] in combatEvents:
         global lblCombat
-        lblCombat["text"] = "Combat: " + combatRanks[state["Rank"]["Combat"][0]] + " (" + str(state["Rank"]["Combat"][0] + 1) + ") - " + str(state["Rank"]["Combat"][1]) + "%"
-        logger.info("Combat rank updated !")
+        drawRank(state["Rank"]["Combat"], combatRanks, lblCombat, "Combat", 1)
+        logger.info("Combat rank updated ! From " + entry["event"])
+
+    if entry["event"] in factionEvents:
+        global lblEmpire
+        drawRank(state["Rank"]["Empire"], empireRanks, lblEmpire, "Empire")
+        global lblFederation
+        drawRank(state["Rank"]["Federation"], fedRanks, lblFederation, "Federation")
+
+        logger.info("Faction rank updated ! From " + entry["event"])

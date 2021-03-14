@@ -31,3 +31,37 @@ combatRanks = [
     "Deadly",
     "Elite"
 ]
+empireRanks = [
+    "None",
+    "Outsider",
+    "Serf",
+    "Master",
+    "Squire",
+    "Knight",
+    "Lord",
+    "Baron",
+    "Viscount",
+    "Count",
+    "Earl",
+    "Marquis",
+    "Duke",
+    "Prince",
+    "King"
+]
+fedRanks = [
+    "None",
+    "Recruit",
+    "Cadet",
+    "Midshipman",
+    "Petty Officer",
+    "Chief P. Off.",
+    "Warrant Off.",
+    "Ensign",
+    "Lieutenant",
+    "Lieut. Cmdr.",
+    "Post Commander",
+    "Post Captain",
+    "Rear Admiral",
+    "Vice Admiral",
+    "Admiral"
+]
