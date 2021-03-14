@@ -5,8 +5,9 @@ import tkinter as tk
 import logging
 import os
 
-from config import appname
+from config import appname, config
 from theme import theme
+import myNotebook as nb
 
 from ranks import explorerRanks, merchantRanks, combatRanks, empireRanks, fedRanks
 
@@ -32,6 +33,13 @@ if not logger.hasHandlers():
     logger_channel.setFormatter(logger_formatter)
     logger.addHandler(logger_channel)
 
+
+showExplorer: Optional[tk.IntVar] = None
+showMerchant: Optional[tk.IntVar] = None
+showCombat: Optional[tk.IntVar] = None
+showEmpire: Optional[tk.IntVar] = None
+showFederation: Optional[tk.IntVar] = None
+
 lblExplorer: Optional[tk.Label]
 statusExplorer: Optional[tk.Label]
 lblMerchant: Optional[tk.Label]
@@ -44,8 +52,48 @@ def plugin_start3(plugin_dir: str) -> str:
     """
     Load this plugin into EDMC
     """
+    global showExplorer
+    showExplorer = tk.IntVar(value=config.getint("showExplorer"))
+    global showMerchant
+    showMerchant = tk.IntVar(value=config.getint("showMerchant"))
+    global showCombat
+    showCombat = tk.IntVar(value=config.getint("showCombat"))
+    global showEmpire
+    showEmpire = tk.IntVar(value=config.getint("showEmpire"))
+    global showFederation
+    showFederation = tk.IntVar(value=config.getint("showFederation"))
     return "edmc-rank"
 
+def plugin_prefs(parent, cmdr, is_beta):
+    frame = nb.Frame(parent)
+    frame.columnconfigure(2, weight=1)
+
+    nb.Label(frame, text="Show :").grid(row = 0, column=0, sticky=tk.W)
+    global showExplorer
+    nb.Checkbutton(frame, text="Explorer", variable=showExplorer).grid(row=1, column=1, sticky=tk.W)
+    global showMerchant
+    nb.Checkbutton(frame, text="Trader", variable=showMerchant).grid(row=2, column=1, sticky=tk.W)
+    global showCombat
+    nb.Checkbutton(frame, text="Combat", variable=showCombat).grid(row=3, column=1, sticky=tk.W)
+    global showEmpire
+    nb.Checkbutton(frame, text="Empire", variable=showEmpire).grid(row=4, column=1, sticky=tk.W)
+    global showFederation
+    nb.Checkbutton(frame, text="Federation", variable=showFederation).grid(row=5, column=1, sticky=tk.W)
+
+    return frame
+
+def prefs_changed(cmdr, is_beta):
+    global showExplorer
+    config.set("showExplorer", showExplorer.get())
+    global showMerchant
+    config.set("showMerchant", showMerchant.get())
+    global showCombat
+    config.set("showCombat", showCombat.get())
+    global showEmpire
+    config.set("showEmpire", showEmpire.get())
+    global showFederation
+    config.set("showFederation", showFederation.get())
+    display()
 
 def plugin_app(parent: tk.Frame) -> Tuple[tk.Label, tk.Label]:
     """
@@ -74,13 +122,52 @@ def plugin_app(parent: tk.Frame) -> Tuple[tk.Label, tk.Label]:
 
     global lblEmpire
     lblEmpire = tk.Label(frame, text="Empire:")
-    lblEmpire.grid(row=5, column=1, sticky=tk.W)
+    lblEmpire.grid(row=6, column=1, sticky=tk.W)
 
     global lblFederation
     lblFederation = tk.Label(frame, text="Federation:")
-    lblFederation.grid(row=6, column=1, sticky=tk.W)
+    lblFederation.grid(row=7, column=1, sticky=tk.W)
+    display()
 
     return frame
+
+def display():
+    global lblExplorer
+    global statusExplorer
+    if (config.getint("showExplorer") != 1):
+        lblExplorer.grid_remove()
+        statusExplorer.grid_remove()
+    else:
+        lblExplorer.grid(row=0, column=1, sticky=tk.W)
+        statusExplorer.grid(row=1, column=1, sticky=tk.W)
+
+    global lblMerchant
+    global statusMerchant
+    if (config.getint("showMerchant") != 1):
+        lblMerchant.grid_remove()
+        statusMerchant.grid_remove()
+    else:
+        lblMerchant.grid(row=2, column=1, sticky=tk.W)
+        statusMerchant.grid(row=3, column=1, sticky=tk.W)
+
+    global lblCombat
+    if (config.getint("showCombat") != 1):
+        lblCombat.grid_remove()
+    else:
+        lblCombat.grid(row=4, column=1, sticky=tk.W)
+
+    global lblEmpire
+    if (config.getint("showEmpire") != 1):
+        lblEmpire.grid_remove()
+    else:
+        lblEmpire.grid(row=6, column=1, sticky=tk.W)
+
+    global lblFederation
+    if (config.getint("showFederation") != 1):
+        lblFederation.grid_remove()
+    else:
+        lblFederation.grid(row=7, column=1, sticky=tk.W)
+
 
 def calcNeed(pRank: Tuple[int, int], ranks: List[Tuple[int,str]]) -> Tuple[int, str]:
     if pRank[0] != len(ranks) - 1:
