@@ -53,15 +53,15 @@ def plugin_start3(plugin_dir: str) -> str:
     Load this plugin into EDMC
     """
     global showExplorer
-    showExplorer = tk.IntVar(value=config.getint("showExplorer"))
+    showExplorer = tk.IntVar(value=config.get_int("showExplorer"))
     global showMerchant
-    showMerchant = tk.IntVar(value=config.getint("showMerchant"))
+    showMerchant = tk.IntVar(value=config.get_int("showMerchant"))
     global showCombat
-    showCombat = tk.IntVar(value=config.getint("showCombat"))
+    showCombat = tk.IntVar(value=config.get_int("showCombat"))
     global showEmpire
-    showEmpire = tk.IntVar(value=config.getint("showEmpire"))
+    showEmpire = tk.IntVar(value=config.get_int("showEmpire"))
     global showFederation
-    showFederation = tk.IntVar(value=config.getint("showFederation"))
+    showFederation = tk.IntVar(value=config.get_int("showFederation"))
     return "edmc-rank"
 
 def plugin_prefs(parent, cmdr, is_beta):
@@ -134,7 +134,7 @@ def plugin_app(parent: tk.Frame) -> Tuple[tk.Label, tk.Label]:
 def display():
     global lblExplorer
     global statusExplorer
-    if (config.getint("showExplorer") != 1):
+    if (config.get_int("showExplorer") != 1):
         lblExplorer.grid_remove()
         statusExplorer.grid_remove()
     else:
@@ -143,7 +143,7 @@ def display():
 
     global lblMerchant
     global statusMerchant
-    if (config.getint("showMerchant") != 1):
+    if (config.get_int("showMerchant") != 1):
         lblMerchant.grid_remove()
         statusMerchant.grid_remove()
     else:
@@ -151,19 +151,19 @@ def display():
         statusMerchant.grid(row=3, column=1, sticky=tk.W)
 
     global lblCombat
-    if (config.getint("showCombat") != 1):
+    if (config.get_int("showCombat") != 1):
         lblCombat.grid_remove()
     else:
         lblCombat.grid(row=4, column=1, sticky=tk.W)
 
     global lblEmpire
-    if (config.getint("showEmpire") != 1):
+    if (config.get_int("showEmpire") != 1):
         lblEmpire.grid_remove()
     else:
         lblEmpire.grid(row=6, column=1, sticky=tk.W)
 
     global lblFederation
-    if (config.getint("showFederation") != 1):
+    if (config.get_int("showFederation") != 1):
         lblFederation.grid_remove()
     else:
         lblFederation.grid(row=7, column=1, sticky=tk.W)
@@ -209,28 +209,31 @@ factionEvents = ["StartUp", "Undocked", "Docked", "MissionCompleted"]
 def journal_entry(
     cmdr: str, is_beta: bool, system: str, station: str, entry: Dict[str, Any], state: Dict[str, Any]
 ) -> None:
-    # logger.debug(state["Rank"])
-    if entry["event"] in explorerEvents:
-        global lblExplorer
-        global statusExplorer
-        drawRankTodo(state["Rank"]["Explore"], explorerRanks, (lblExplorer, statusExplorer), "Explorer")
-        logger.info("Explorer rank updated ! From " + entry["event"])
+    try:
+        logger.debug(state["Rank"])
+        if entry["event"] in explorerEvents:
+            global lblExplorer
+            global statusExplorer
+            drawRankTodo(state["Rank"]["Explore"], explorerRanks, (lblExplorer, statusExplorer), "Explorer")
+            logger.info("Explorer rank updated ! From " + entry["event"])
 
-    if entry["event"] in merchantEvents:
-        global lblMerchant
-        global statusMerchant
-        drawRankTodo(state["Rank"]["Trade"], merchantRanks, (lblMerchant, statusMerchant), "Trader")
-        logger.info("Trader rank updated ! From " + entry["event"])
+        if entry["event"] in merchantEvents:
+            global lblMerchant
+            global statusMerchant
+            drawRankTodo(state["Rank"]["Trade"], merchantRanks, (lblMerchant, statusMerchant), "Trader")
+            logger.info("Trader rank updated ! From " + entry["event"])
 
-    if entry["event"] in combatEvents:
-        global lblCombat
-        drawRank(state["Rank"]["Combat"], combatRanks, lblCombat, "Combat", 1)
-        logger.info("Combat rank updated ! From " + entry["event"])
+        if entry["event"] in combatEvents:
+            global lblCombat
+            drawRank(state["Rank"]["Combat"], combatRanks, lblCombat, "Combat", 1)
+            logger.info("Combat rank updated ! From " + entry["event"])
 
-    if entry["event"] in factionEvents:
-        global lblEmpire
-        drawRank(state["Rank"]["Empire"], empireRanks, lblEmpire, "Empire")
-        global lblFederation
-        drawRank(state["Rank"]["Federation"], fedRanks, lblFederation, "Federation")
+        if entry["event"] in factionEvents:
+            global lblEmpire
+            drawRank(state["Rank"]["Empire"], empireRanks, lblEmpire, "Empire")
+            global lblFederation
+            drawRank(state["Rank"]["Federation"], fedRanks, lblFederation, "Federation")
 
-        logger.info("Faction rank updated ! From " + entry["event"])
+            logger.info("Faction rank updated ! From " + entry["event"])
+    except KeyError as err:
+        logger.info("Can't get ranks ! " + repr(err))
