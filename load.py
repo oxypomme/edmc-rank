@@ -37,14 +37,23 @@ if not logger.hasHandlers():
 showExplorer: Optional[tk.IntVar] = None
 showMerchant: Optional[tk.IntVar] = None
 showCombat: Optional[tk.IntVar] = None
+showExo: Optional[tk.IntVar] = None
+showMerc: Optional[tk.IntVar] = None
+
 showEmpire: Optional[tk.IntVar] = None
 showFederation: Optional[tk.IntVar] = None
+
 
 lblExplorer: Optional[tk.Label]
 statusExplorer: Optional[tk.Label]
 lblMerchant: Optional[tk.Label]
 statusMerchant: Optional[tk.Label]
 lblCombat: Optional[tk.Label]
+lblExo: Optional[tk.Label]
+statusExo: Optional[tk.Label]
+lblMerc: Optional[tk.Label]
+# statusMerc: Optional[tk.Label]
+
 lblEmpire: Optional[tk.Label]
 lblFederation: Optional[tk.Label]
 
@@ -58,27 +67,41 @@ def plugin_start3(plugin_dir: str) -> str:
     showMerchant = tk.IntVar(value=config.get_int("showMerchant"))
     global showCombat
     showCombat = tk.IntVar(value=config.get_int("showCombat"))
+    global showExo
+    showExo = tk.IntVar(value=config.get_int("showExo"))
+    global showMerc
+    showMerc = tk.IntVar(value=config.get_int("showMerc"))
+
     global showEmpire
     showEmpire = tk.IntVar(value=config.get_int("showEmpire"))
     global showFederation
     showFederation = tk.IntVar(value=config.get_int("showFederation"))
+
     return "edmc-rank"
 
 def plugin_prefs(parent, cmdr, is_beta):
     frame = nb.Frame(parent)
-    frame.columnconfigure(2, weight=1)
 
     nb.Label(frame, text="Show :").grid(row = 0, column=0, sticky=tk.W)
+    nb.Label(frame, text="Base :").grid(row = 0, column=1, sticky=tk.W)
     global showExplorer
     nb.Checkbutton(frame, text="Explorer", variable=showExplorer).grid(row=1, column=1, sticky=tk.W)
     global showMerchant
     nb.Checkbutton(frame, text="Trader", variable=showMerchant).grid(row=2, column=1, sticky=tk.W)
     global showCombat
     nb.Checkbutton(frame, text="Combat", variable=showCombat).grid(row=3, column=1, sticky=tk.W)
+
+    nb.Label(frame, text="Odyssey :").grid(row = 0, column=2, sticky=tk.W)
+    global showExo
+    nb.Checkbutton(frame, text="Exobiologist", variable=showExo).grid(row=1, column=2, sticky=tk.W)
+    global showMerc
+    nb.Checkbutton(frame, text="Mercenary", variable=showMerc).grid(row=2, column=2, sticky=tk.W)
+
+    nb.Label(frame, text="Factions :").grid(row = 0, column=3, sticky=tk.W)
     global showEmpire
-    nb.Checkbutton(frame, text="Empire", variable=showEmpire).grid(row=4, column=1, sticky=tk.W)
+    nb.Checkbutton(frame, text="Empire", variable=showEmpire).grid(row=1, column=3, sticky=tk.W)
     global showFederation
-    nb.Checkbutton(frame, text="Federation", variable=showFederation).grid(row=5, column=1, sticky=tk.W)
+    nb.Checkbutton(frame, text="Federation", variable=showFederation).grid(row=2, column=3, sticky=tk.W)
 
     return frame
 
@@ -89,10 +112,17 @@ def prefs_changed(cmdr, is_beta):
     config.set("showMerchant", showMerchant.get())
     global showCombat
     config.set("showCombat", showCombat.get())
+
+    global showExo
+    config.set("showExo", showExo.get())
+    global showMerc
+    config.set("showMerc", showMerc.get())
+
     global showEmpire
     config.set("showEmpire", showEmpire.get())
     global showFederation
     config.set("showFederation", showFederation.get())
+
     display()
 
 def plugin_app(parent: tk.Frame) -> Tuple[tk.Label, tk.Label]:
@@ -100,33 +130,48 @@ def plugin_app(parent: tk.Frame) -> Tuple[tk.Label, tk.Label]:
     Create a pair of TK widgets for the EDMC main window
     """
     frame = tk.Frame(parent)
-    frame.columnconfigure(1, weight=1)
 
     global lblExplorer
     lblExplorer = tk.Label(frame, text="Explorer:")
-    lblExplorer.grid(row=0, column=1, sticky=tk.W)
+    lblExplorer.grid(row=0, column=0, sticky=tk.W)
     global statusExplorer
     statusExplorer = tk.Label(frame, text="   ? Cr")
-    statusExplorer.grid(row=1, column=1, sticky=tk.W)
+    statusExplorer.grid(row=1, column=0, sticky=tk.W)
 
     global lblMerchant
     lblMerchant = tk.Label(frame, text="Trader:")
-    lblMerchant.grid(row=2, column=1, sticky=tk.W)
+    lblMerchant.grid(row=2, column=0, sticky=tk.W)
     global statusMerchant
     statusMerchant = tk.Label(frame, text="   ? Cr")
-    statusMerchant.grid(row=3, column=1, sticky=tk.W)
+    statusMerchant.grid(row=3, column=0, sticky=tk.W)
 
     global lblCombat
     lblCombat = tk.Label(frame, text="Combat:")
-    lblCombat.grid(row=4, column=1, sticky=tk.W)
+    lblCombat.grid(row=4, column=0, sticky=tk.W)
+
+
+    global lblExo
+    lblExo = tk.Label(frame, text="Exobiologist:")
+    lblExo.grid(row=0, column=1, sticky=tk.W)
+    global statusExo
+    statusExo = tk.Label(frame, text="   ? Cr")
+    statusExo.grid(row=1, column=1, sticky=tk.W)
+
+    global lblMerc
+    lblMerc = tk.Label(frame, text="Mercenary:")
+    lblMerc.grid(row=2, column=1, sticky=tk.W)
+    # global statusMerc
+    # statusMerc = tk.Label(frame, text="   ? Cr")
+    # statusMerc.grid(row=3, column=1, sticky=tk.W)
+
 
     global lblEmpire
     lblEmpire = tk.Label(frame, text="Empire:")
-    lblEmpire.grid(row=6, column=1, sticky=tk.W)
+    lblEmpire.grid(row=0, column=2, sticky=tk.W)
 
     global lblFederation
     lblFederation = tk.Label(frame, text="Federation:")
-    lblFederation.grid(row=7, column=1, sticky=tk.W)
+    lblFederation.grid(row=1, column=2, sticky=tk.W)
     display()
 
     return frame
@@ -138,8 +183,8 @@ def display():
         lblExplorer.grid_remove()
         statusExplorer.grid_remove()
     else:
-        lblExplorer.grid(row=0, column=1, sticky=tk.W)
-        statusExplorer.grid(row=1, column=1, sticky=tk.W)
+        lblExplorer.grid(row=0, column=0, sticky=tk.W)
+        statusExplorer.grid(row=1, column=0, sticky=tk.W)
 
     global lblMerchant
     global statusMerchant
@@ -147,26 +192,46 @@ def display():
         lblMerchant.grid_remove()
         statusMerchant.grid_remove()
     else:
-        lblMerchant.grid(row=2, column=1, sticky=tk.W)
-        statusMerchant.grid(row=3, column=1, sticky=tk.W)
+        lblMerchant.grid(row=2, column=0, sticky=tk.W)
+        statusMerchant.grid(row=3, column=0, sticky=tk.W)
 
     global lblCombat
     if (config.get_int("showCombat") != 1):
         lblCombat.grid_remove()
     else:
-        lblCombat.grid(row=4, column=1, sticky=tk.W)
+        lblCombat.grid(row=4, column=0, sticky=tk.W)
+
+
+    global lblExo
+    global statusExo
+    if (config.get_int("showExo") != 1):
+        lblExo.grid_remove()
+        statusMerchant.grid_remove()
+    else:
+        lblExo.grid(row=0, column=1, sticky=tk.W)
+        statusExo.grid(row=1, column=1, sticky=tk.W)
+
+    global lblMerc
+    # global statusMerc
+    if (config.get_int("showMerc") != 1):
+        lblMerc.grid_remove()
+        # statusMerc.grid_remove()
+    else:
+        lblMerc.grid(row=2, column=1, sticky=tk.W)
+        # statusMerc.grid(row=3, column=1, sticky=tk.W)
+
 
     global lblEmpire
     if (config.get_int("showEmpire") != 1):
         lblEmpire.grid_remove()
     else:
-        lblEmpire.grid(row=6, column=1, sticky=tk.W)
+        lblEmpire.grid(row=0, column=2, sticky=tk.W)
 
     global lblFederation
     if (config.get_int("showFederation") != 1):
         lblFederation.grid_remove()
     else:
-        lblFederation.grid(row=7, column=1, sticky=tk.W)
+        lblFederation.grid(row=1, column=2, sticky=tk.W)
 
 
 def calcNeed(pRank: Tuple[int, int], ranks: List[Tuple[int,str]]) -> Tuple[int, str]:
@@ -187,7 +252,7 @@ def calcNeed(pRank: Tuple[int, int], ranks: List[Tuple[int,str]]) -> Tuple[int, 
 def drawRankTodo(pRank: Tuple[int, int], ranks: List[Tuple[int,str]], labels: Tuple[tk.Label, tk.Label], name: str) -> None:
     # Show rank with percentage
     labels[0]["text"] = f"{name}: {ranks[pRank[0]][0]} ({pRank[0] + 1}) - {str(pRank[1])} %"
-    # If not elite
+    # If not last elite
     if pRank[0] != len(ranks) - 1:
         need = calcNeed(pRank, ranks)
         # Show credits to farm
@@ -204,6 +269,8 @@ def drawRank(pRank: Tuple[int, int], ranks: List[str], label: tk.Label, name: st
 explorerEvents = ["StartUp", "Undocked", "SellExplorationData", "MissionCompleted"]
 merchantEvents = ["StartUp", "Undocked", "MarketSell", "MissionCompleted"]
 combatEvents = ["StartUp", "Undocked", "Docked", "Bounty", "MissionCompleted", "StartJump"]
+exoEvents = ["StartUp", "Undocked", "Docked", "MissionCompleted"]
+mercEvents = ["StartUp", "Undocked", "Docked", "MissionCompleted"]
 factionEvents = ["StartUp", "Undocked", "Docked", "MissionCompleted"]
 
 def journal_entry(
@@ -211,6 +278,7 @@ def journal_entry(
 ) -> None:
     try:
         logger.debug(state["Rank"])
+        logger.debug(entry["event"])
         if entry["event"] in explorerEvents:
             global lblExplorer
             global statusExplorer
@@ -228,6 +296,20 @@ def journal_entry(
             drawRank(state["Rank"]["Combat"], combatRanks, lblCombat, "Combat", 1)
             logger.info("Combat rank updated ! From " + entry["event"])
 
+        if state['Odyssey'] == True:
+            if entry["event"] in exoEvents:
+                global lblExo
+                global statusExo
+                # drawRankTodo(state["Rank"]["Trade"], merchantRanks, (lblExo, statusExo), "Exobiologist")
+                logger.info("Exo rank updated ! From " + entry["event"])
+
+            if entry["event"] in mercEvents:
+                global lblMerc
+                # global statusMerc
+                # drawRankTodo(state["Rank"]["Trade"], merchantRanks, lblMerc, "Mercenary")
+                # drawRankTodo(state["Rank"]["Trade"], merchantRanks, (lblMerc, statusMerc), "Mercenary")
+                logger.info("Merc rank updated ! From " + entry["event"])
+
         if entry["event"] in factionEvents:
             global lblEmpire
             drawRank(state["Rank"]["Empire"], empireRanks, lblEmpire, "Empire")
@@ -236,4 +318,4 @@ def journal_entry(
 
             logger.info("Faction rank updated ! From " + entry["event"])
     except KeyError as err:
-        logger.info("Can't get ranks ! " + repr(err))
+        logger.error("Can't get ranks ! " + repr(err))
